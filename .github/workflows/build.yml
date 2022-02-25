@@ -16,10 +16,13 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [16.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+    - run: sudo apt install qemu binfmt-support qemu-user-static
+    - run: update-binfmts --display
+    - run: git clone https://github.com/xerub/ldid.git ldid && cd ldid && sudo ./make.sh && sudo install ldid /usr/local/bin && cd .. && rm -rf ldid && ldid
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
@@ -28,4 +31,3 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test
