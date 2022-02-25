@@ -2,7 +2,9 @@
 
 [![Node.js CI](https://github.com/jayohf/defi-cli/actions/workflows/build.yml/badge.svg)](https://github.com/jayohf/defi-cli/actions/workflows/build.yml)
 
-**DEFI-CLI** is free to download.
+**DEFI-CLI** is free to download. 
+
+Binaries are built using GitHub Actions and are available for Linux (x64, arm), macOS (x64, arm), and Windows (x64).
 
 ### Supported Blockchain
 
