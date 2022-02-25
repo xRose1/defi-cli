@@ -1,5 +1,7 @@
 # DEFI-CLI
 
+[![Node.js CI](https://github.com/jayohf/defi-cli/actions/workflows/node.js.yml/badge.svg)](https://github.com/jayohf/defi-cli/actions/workflows/node.js.yml)
+
 **DEFI-CLI** is free to download.
 
 ### Supported Blockchain
