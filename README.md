@@ -6,6 +6,8 @@
 
 Binaries are built using GitHub Actions and are available for Linux (x64, arm), macOS (x64, arm), and Windows (x64). Check the [![releases page](https://github.com/jayohf/defi-cli/releases/)](https://github.com/jayohf/defi-cli/releases/) for the latest version.
 
+Donations: Reach out to @jayohf on Telegram.
+
 ### Supported Blockchain
 
 [![Ethereum Mainnet](https://user-images.githubusercontent.com/94490774/151673025-9788678c-3271-4d18-9d25-930e8f745316.png)](https://ethereum.org/)
