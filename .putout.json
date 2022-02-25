@@ -1,0 +1,11 @@
+{
+    "rules": {
+        "remove-console": "off",
+        "convert-commonjs-to-esm": "on",
+        "convert-esm-to-commonjs": "off",
+        "apply-numeric-separators": "off",
+        "remove-empty/import": "off",
+        "nodejs/remove-process-exit": "off",
+        "convert-comparison-to-boolean": "off"
+    }
+}

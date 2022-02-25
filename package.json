@@ -1,0 +1,42 @@
+{
+  "name": "defi-cli",
+  "version": "0.1.0",
+  "type": "commonjs",
+  "bin": {
+    "defi-cli": "app.js"
+  },
+  "dependencies": {
+    "@mtproto/core": "6.1.1",
+    "abi-decoder": "^2.4.0",
+    "bn.js": "^5.2.0",
+    "chalk": "^4.1.2",
+    "figlet": "^1.5.2",
+    "inquirer": "^8.2.0",
+    "node-emoji": "^1.11.0",
+    "node-fetch": "^2.6.1",
+    "pkg": "^5.5.2",
+    "rollup": "^2.68.0",
+    "ora": "^5.4.1",
+    "web3": "^1.6.0",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5"
+  },
+  "author": "jayohf",
+  "license": "MIT",
+  "pkg": {
+    "assets": [
+      "node_modules/figlet"
+    ],
+    "targets": [
+      "node16-linux-x64",
+      "node16-macos-x64",
+      "node16-win-x64",
+      "node16-linux-arm64",
+      "node16-macos-arm64"
+    ],
+    "outputPath": "bin"
+  },
+  "scripts": {
+    "build": "rollup -c && pkg -compress GZip ."
+  }
+}
