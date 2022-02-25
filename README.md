@@ -1,6 +1,6 @@
 # DEFI-CLI
 
-[![Node.js CI](https://github.com/jayohf/defi-cli/actions/workflows/node.js.yml/badge.svg)](https://github.com/jayohf/defi-cli/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/jayohf/defi-cli/actions/workflows/build.yml/badge.svg)](https://github.com/jayohf/defi-cli/actions/workflows/build.yml)
 
 **DEFI-CLI** is free to download.
 
