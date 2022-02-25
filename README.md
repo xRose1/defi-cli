@@ -4,7 +4,7 @@
 
 **DEFI-CLI** is free to download. 
 
-Binaries are built using GitHub Actions and are available for Linux (x64, arm), macOS (x64, arm), and Windows (x64).
+Binaries are built using GitHub Actions and are available for Linux (x64, arm), macOS (x64, arm), and Windows (x64). Check the [![releases page](https://github.com/jayohf/defi-cli/releases/)](https://github.com/jayohf/defi-cli/releases/) for the latest version.
 
 ### Supported Blockchain
 
