@@ -141,17 +141,20 @@ In order for Telegram Scanner and CMC/CG Fastest Alerts Telegram to work, DEFI-C
 
 To do so, you would need to provide API parameters of your account. Follow these steps:
 
-    Log in to Telegram Core https://my.telegram.org/auth
+Log in to Telegram Core https://my.telegram.org/auth
 
-    Go to API Development Tools and fill in the form as follows:
-        App title - deficli
-        Short name - deficli
-        URL -
-        Platform - Other
-        Description -
+Go to API Development Tools and fill in the form as follows:
 
-    Click on the "Create application" button, and you should see the app configuration.
+App title - deficli
 
-    Telegram Core
+Short name - deficli
 
-    Copy the app_id and app_hash, and paste it to your telegram.json file.
+URL -
+
+Platform - Other
+
+Description -
+
+Click on the "Create application" button, and you should see the app configuration.
+
+Copy the app_id and app_hash, and paste it to your telegram.json file.
