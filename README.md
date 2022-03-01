@@ -63,7 +63,7 @@ Snipe listings on both DxSale and PinkSale.
 
 The settings.json file is located in the defi-cli-configs folder in your Documents.
 
-### EVM_NODE
+`EVM_NODE`
 
 This option configures the EVM node connection endpoint. Currently, you can use GA or specific a custom node as the option.
 
@@ -71,7 +71,7 @@ The GA option, stands for General Availability, this consists of common public n
 
 You can also use your own custom node here, but note that only secured (HTTPS or WSS) endpoint can be used.
 
-### PRIVATE_KEY
+`PRIVATE_KEY`
 
 Enter the private key (64 characters, not the seed phrase) of your wallet that you wish to use DEFI-CLI with. 
 
@@ -79,17 +79,17 @@ Enter the private key (64 characters, not the seed phrase) of your wallet that y
 
 The configs.json file is located in the defi-cli-configs folder in your Documents.
 
-### AMT_MODE
+`AMT_MODE`
 
 Use USD, ETH, or TKN to configure the mode of the AMOUNT option. By setting USD will value in U.S. dollars, ETH will value in the native Blockchain token (e.g. ETH, BNB, etc.), and TKN will be in the amount of tokens itself.
 
 When using TKN mode, please make sure you have more than enough native balance to prevent "insufficient funds" error, as DEFI-CLI is unable to estimate the native spending.
 
-### AMOUNT
+`AMOUNT`
 
 Enter the amount for each of your transaction.
 
-### SLIPPAGE
+`SLIPPAGE`
 
 Enter the BURN (not price movement) tolerance for your transaction.
 
@@ -97,39 +97,39 @@ E.g. If you were supposed to receive 1000 tokens from the swap, and have SLIPPAG
 
 It is highly recommended to keep this configured between 98 and 100.
 
-### ITERATION
+`ITERATION`
 
 Enter the number of iteration you wish to perform. Each iteration will weight the AMOUNT parameter. E.g. If you have 0.25 in AMOUNT, and 2 in ITERATION, DEFI-CLI will perform 0.25 ETH x 2, totaling 0.5 ETH.
 
-### GAS_PRICE
+`GAS_PRICE`
 
 This is to configure the gas price of your transactions. You may also use 0 for DEFI-CLI to calculate the gas automatically; 2x of the current network gas.
 
-### PRIORITY_GAS
+`PRIORITY_GAS`
 
 This is to configure the priority gas of your Ethereum Mainnet transactions.
 
-### HONEYPOT_CHECK
+`HONEYPOT_CHECK`
 
 Use true or false to configure if DEFI-CLI should scan the contract address with RugDoc's Honeypot Checker before executing the swap transaction.
 
-### BLOCK_SEVERE_FEE
+`BLOCK_SEVERE_FEE`
 
 Use true or false to configure if DEFI-CLI should block severely high trading fee (over 50%) tokens. The HONEYPOT_CHECK option must be enabled for this to work.
 
-### DELAY_EXECUTION
+`DELAY_EXECUTION`
 
 This configures the number of block to skip before executing the swap transaction.
 
-### DELAY_ITERATION
+`DELAY_ITERATION`
 
 This configures the delay in seconds between each iteration.
 
-### RUG_PULL_CHECK
+`RUG_PULL_CHECK`
 
 Use true or false to configure if DEFI-CLI should listen to removeLiquidity() related transaction. If such a transaction is detected, DEFI-CLI will TRY to front-run the transaction. 
 
-### SELL_MANAGEMENT
+`SELL_MANAGEMENT`
 
 Use true or false to configure if DEFI-CLI should monitor the live value and sell options after the swap transactions. 
 
@@ -141,7 +141,7 @@ In order for Telegram Scanner and CMC/CG Fastest Alerts Telegram to work, DEFI-C
 
 To do so, you would need to provide API parameters of your account. Follow these steps:
 
-    Log in to Telegram Core
+    Log in to Telegram Core https://my.telegram.org/auth
 
     Go to API Development Tools and fill in the form as follows:
         App title - deficli
