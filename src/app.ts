@@ -75,26 +75,27 @@ import {
 } from './telegram/index.js';
 import {
     getCoreLocation,
-    readFile,
-    validateConfigs,
+    //readFile,
+    //validateConfigs,
     validateSettings,
     validateTelegram,
-    writeFile
+    //writeFile
 } from './utilities/index.js';
+import { config, walletConfig } from './config/index.js'
 
 const Package = {
     name: "defi-cli",
-    version: "0.1.0"
+    version: "0.2.0"
 }
 
-let settings;
-let configs;
-let telegram;
-let chain;
-let exchange;
-let exchangeName;
+let settings: any;
+let configs: any;
+let telegram: any;
+let chain: any;
+let exchange: any;
+let exchangeName: any;
 
-async function disclaimer() {
+export async function start() {
     castFiglet(Package.name.toUpperCase()).then(G => {
         printMainHeader(G, Package.version);
         printErrorHeading('DISCLAIMER');
@@ -110,52 +111,53 @@ async function disclaimer() {
     });
 }
 
-function start() {
-    return disclaimer();
-}
-
-(async () => {
-    await start();
-})();
-
 const initializeFiles = () => {
-    readFile('settings').then(G => {
-        settings = G;
+    settings = walletConfig.store;
+    configs = config.store;
+    telegram = config.get('telegram');
+    return chainSelection();
+    // readFile('settings').then(G => {
+    //     settings = G;
+    //     configs = config.store;
+    //     console.log(configs)
+    //     telegram = config.get('telegram');
+    //     console.log(telegram);
+    //     return chainSelection();
 
-        readFile('configs').then(D => {
-            configs = D;
+    //     readFile('configs').then(D => {
+    //         configs = D;
 
-            readFile('telegram').then(J => {
-                telegram = J;
-                return chainSelection();
-            }).catch(() => {
-                writeFile('telegram', {
-                    'API_ID': '',
-                    'API_HASH': ''
-                }).then(() => initializeFiles());
-            });
-        }).catch(() => {
-            writeFile('configs', {
-                'AMT_MODE': 'USD',
-                'AMOUNT': '10',
-                'SLIPPAGE': '100',
-                'ITERATION': '1',
-                'GAS_PRICE': '0',
-                'PRIORITY_GAS': '1',
-                'HONEYPOT_CHECK': 'false',
-                'BLOCK_SEVERE_FEE': 'false',
-                'DELAY_EXECUTION': '0',
-                'DELAY_ITERATION': '0',
-                'RUG_PULL_CHECK': 'false',
-                'SELL_MANAGEMENT': 'false'
-            }).then(() => initializeFiles());
-        });
-    }).catch(() => {
-        writeFile('settings', {
-            'EVM_NODE': 'GA',
-            'PRIVATE_KEY': ''
-        }).then(() => initializeFiles());
-    });
+    //         readFile('telegram').then(J => {
+    //             telegram = J;
+    //             return chainSelection();
+    //         }).catch(() => {
+    //             writeFile('telegram', {
+    //                 'API_ID': '',
+    //                 'API_HASH': ''
+    //             }).then(() => initializeFiles());
+    //         });
+    //     }).catch(() => {
+    //         writeFile('configs', {
+    //             'amt_mode': 'USD',
+    //             'amount': '10',
+    //             'slippage': '100',
+    //             'iteration': '1',
+    //             'gas_price': '0',
+    //             'priority_gas': '1',
+    //             'honeypot_check': 'false',
+    //             'block_severe_fee': 'false',
+    //             'delay_execution': '0',
+    //             'delay_iteration': '0',
+    //             'rug_pull_check': 'false',
+    //             'sell_management': 'false'
+    //         }).then(() => initializeFiles());
+    //     });
+    // }).catch(() => {
+    //     writeFile('settings', {
+    //         'EVM_NODE': 'GA',
+    //         'private_key': ''
+    //     }).then(() => initializeFiles());
+    // });
 };
 
 const chainSelection = () => {
@@ -171,6 +173,7 @@ const chainSelection = () => {
 
                 exchangeSelection(chain).then(exchangeSelection => {
                     if (exchangeSelection === 0) return process.exit();
+                    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                     else return exchangeSelection === 1 ? chainSelection() : (exchange = exchangeSelection, preloadEthereum());
                 });
             }
@@ -181,7 +184,7 @@ const chainSelection = () => {
 const preloadEthereum = () => {
     const spinner = ora({ text: ('Connecting'), spinner: "aesthetic" }).start();
     validateSettings(settings).then(() => {
-        initializeWeb3(chain, settings.EVM_NODE).then(nodeList => {
+        initializeWeb3(chain).then(nodeList => {
             initializeEthereum(nodeList).then(() => {
                 initializeHelper().then(() => {
                     initializeExchange(chain, exchange).then(() => {
@@ -194,40 +197,41 @@ const preloadEthereum = () => {
             spinner.stop();
             printErrorHeading('ERROR ESTABLISHING CONNECTION');
             printReason(nodeList);
-            printLocation(getCoreLocation('settings.json'));
+            printLocation(getCoreLocation('nodeConfig.json'));
 
             confirmReload().then(() => {
-                readFile('settings').then(J => {
-                    settings = J;
+                //readFile('settings').then(J => {
+                    settings = walletConfig.store;
                     return preloadEthereum();
-                }).catch(() => {
-                    fileLogger.error('CORE: readFile(): Not Found');
-                    return somethingWentWrong();
-                });
+                //}).catch(() => {
+                //    fileLogger.error('CORE: readFile(): Not Found');
+                //    return somethingWentWrong();
+                //});
             });
         });
     }).catch(nodeList => {
         spinner.stop();
         printErrorHeading('MISCONFIGURED SETTINGS');
         printReason(nodeList);
-        printLocation(getCoreLocation('settings.json'));
+        printLocation(getCoreLocation('nodeConfig.json'));
 
         confirmReload().then(() => {
-            readFile('settings').then(J => {
-                settings = J;
+            settings = walletConfig.store;
+            //readFile('settings').then(J => {
+            //    settings = J;
                 return preloadEthereum();
-            }).catch(() => {
-                fileLogger.error('CORE: readFile(): Not Found');
-                return somethingWentWrong();
-            });
+            //}).catch(() => {
+            //    fileLogger.error('CORE: readFile(): Not Found');
+            //    return somethingWentWrong();
+            //});
         });
     });
 };
 
 const bootstrapExchange = () => {
-    readFile('configs').then(G => {
-        configs = G;
-
+    // readFile('configs').then(G => {
+        //configs = G;
+        configs = config.store;
         switch (exchange) {
             case 'UNI':
                 exchangeName = 'Uniswap';
@@ -289,19 +293,20 @@ const bootstrapExchange = () => {
                 parseChainDetails().then(() => parseConfiguration());
             });
         });
-    }).catch(() => {
-        fileLogger.error('CORE: readFile(): Not Found');
-        return somethingWentWrong();
-    });
+    // }).catch(() => {
+    //     fileLogger.error('CORE: readFile(): Not Found');
+    //     return somethingWentWrong();
+    // });
 };
 
 const parseUserDetails = async () => {
     printHeading('User Details');
-    const G = getUserAddress(settings.PRIVATE_KEY);
+    const G = getUserAddress(settings.private_key);
     printInfoLine('Wallet Address', '0x...' + G.slice(38));
     const J = await getBalance(G);
     let l = await getAmountsOut(J);
     if (chain !== 56 && chain !== 321) l = formatWei(l.toString(), 'szabo');
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     printInfoLine(getSymbol() + ' Balance', numberWithCommas(Number(formatEther(J)).toFixed(4)) + ' ' + getSymbol() + ' (' + numberWithCommas(Number(formatEther(l)).toFixed(2)) + ' USD)');
 };
 
@@ -343,8 +348,9 @@ const parseChainDetails = async () => {
     }
 
     printHeading('Chain Details');
-    const evmNode = settings.EVM_NODE;
-    evmNode.toLowerCase().startsWith('https') || evmNode.toLowerCase().startsWith('wss') ? printInfoLine('Network', evmNode) : printInfoLine('Network', chainName + ' (' + evmNode.toUpperCase() + ')');
+    //const evmNode = settings.EVM_NODE;
+    //evmNode.toLowerCase().startsWith('https') || evmNode.toLowerCase().startsWith('wss') ? printInfoLine('Network', evmNode) : printInfoLine('Network', chainName + ' (' + evmNode.toUpperCase() + ')');
+    printInfoLine('Network', chainName);
     const J = await getPrimaryGas();
     printInfoLine('Network Gas', formatGWei(J) + ' GWei');
     const l = await getPrimaryBlock();
@@ -357,43 +363,53 @@ const parseChainDetails = async () => {
 };
 
 const parseConfiguration = () => {
-    validateConfigs(configs, settings, chain).then(() => {
+    //validateConfigs(configs, chain).then(() => {
         printHeading('Loaded Configs');
-        printInfoLine('Transactions', chalk.bold(configs.AMOUNT) + ' ' + configs.AMT_MODE.toUpperCase() + ' * ' + chalk.bold(configs.ITERATION) + ' Iteration (' + chalk.bold(configs.GAS_PRICE === '0' ? 'Auto' : configs.GAS_PRICE) + ' / ' + chalk.bold(configs.PRIORITY_GAS) + ' GWei)');
-        printInfoLine('Honeypot Check', 'Enable ' + chalk.bold('' + configs.HONEYPOT_CHECK.charAt(0).toUpperCase() + configs.HONEYPOT_CHECK.slice(1).toLowerCase()) + ' / Block Severe Fee ' + chalk.bold('' + configs.BLOCK_SEVERE_FEE.charAt(0).toUpperCase() + configs.BLOCK_SEVERE_FEE.slice(1).toLowerCase()));
-        printInfoLine('Sniper Swap Delay', 'Execution ' + chalk.bold(configs.DELAY_EXECUTION) + ' Sec / Iteration ' + chalk.bold(configs.DELAY_ITERATION) + ' Sec');
-        printInfoLine('After Sniper Swap', 'Rug Pull Check ' + chalk.bold('' + configs.RUG_PULL_CHECK.charAt(0).toUpperCase() + configs.RUG_PULL_CHECK.slice(1).toLowerCase()) + ' / Sell Mgn ' + chalk.bold('' + configs.SELL_MANAGEMENT.charAt(0).toUpperCase() + configs.SELL_MANAGEMENT.slice(1).toLowerCase()));
+        printInfoLine('Transactions', chalk.bold(configs.amount) + ' ' + configs.amt_mode.toUpperCase() + ' * ' + chalk.bold(configs.iteration) + ' Iteration (' + chalk.bold(configs.gas_price === '0' ? 'Auto' : configs.gas_price) + ' / ' + chalk.bold(configs.priority_gas) + ' GWei)');
+        printInfoLine('Honeypot Check', 'Enable ' + chalk.bold('' + configs.honeypot_check.charAt(0).toUpperCase() + configs.honeypot_check.slice(1).toLowerCase()) + ' / Block Severe Fee ' + chalk.bold('' + configs.block_severe_fee.charAt(0).toUpperCase() + configs.block_severe_fee.slice(1).toLowerCase()));
+        printInfoLine('Sniper Swap Delay', 'Execution ' + chalk.bold(configs.delay_execution) + ' Sec / Iteration ' + chalk.bold(configs.delay_iteration) + ' Sec');
+        printInfoLine('After Sniper Swap', 'Rug Pull Check ' + chalk.bold('' + configs.rug_pull_check.charAt(0).toUpperCase() + configs.rug_pull_check.slice(1).toLowerCase()) + ' / Sell Mgn ' + chalk.bold('' + configs.sell_management.charAt(0).toUpperCase() + configs.sell_management.slice(1).toLowerCase()));
         return exchangeMenu();
-    }).catch(G => {
-        printErrorHeading('MISCONFIGURED CONFIGS');
-        printReason(G);
-        printLocation(getCoreLocation('configs.json'));
-        confirmReload().then(() => bootstrapExchange());
-    });
+    //}).catch(G => {
+        // printErrorHeading('MISCONFIGURED CONFIGS');
+        // printReason(G);
+        // printLocation(getCoreLocation('configs.json'));
+        // confirmReload().then(() => bootstrapExchange());
+    //});
 };
 
 const exchangeMenu = () => {
     printHeading(exchangeName + ' Menu');
 
     exchangeMenuSelection(exchange).then(menu => {
+        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         if (menu.option === 0) return process.exit();
         else {
+            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
             if (menu.option === 1) return chainSelection();
             else {
+                // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                 if (menu.option === 2) return latencyPingTests();
                 else {
+                    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                     if (menu.option === 3 || menu.selection && menu.selection === 1) return bootstrapExchange();
                     else {
+                        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                         if (menu.option === 60 || menu.option === 70) {
+                            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                             if (chain === 250 && menu.option === 70) {
                                 printErrorHeading('NOT SUPPORTED');
                                 printReason('PinkSale does not support Fantom Opera.');
                                 temporaryUnavailable().then(() => bootstrapExchange());
                             } else
+                                // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                                 return estimatedSpendingRouter(menu.option);
                         } else {
+                            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                             if (menu.selection) {
+                                // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                                 if (menu.selection === 130 || menu.selection === 342) temporaryUnavailable().then(() => bootstrapExchange());
+                                // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                                 else return estimatedSpendingRouter(menu.option, menu.selection);
                             } else temporaryUnavailable().then(() => bootstrapExchange());
                         }
@@ -416,19 +432,23 @@ const latencyPingTests = async () => {
     confirmReload().then(() => bootstrapExchange());
 };
 
-const estimatedSpendingRouter = async (menuOption, menuSelection = 0) => {
+const estimatedSpendingRouter = async (menuOption: any, menuSelection = 0) => {
     printHeading('Estimated Spending');
     let J;
     let l;
-    const X = menuSelection !== 130 && menuSelection !== 120 && menuSelection !== 110 ? parseFloat(configs.AMOUNT) : parseFloat(configs.AMOUNT) * parseInt(configs.ITERATION);
+    const X = menuSelection !== 130 && menuSelection !== 120 && menuSelection !== 110 ? parseFloat(configs.amount) : parseFloat(configs.amount) * parseInt(configs.iteration);
 
-    if (configs.AMT_MODE.toLowerCase() === 'usd') {
+    if (configs.amt_mode.toLowerCase() === 'usd') {
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
         const p = chain !== 56 && chain !== 321 ? formatWei(X.toString(), 'mwei') : formatWei(X.toString());
         J = await getAmountsOut(p, getUsd(), getNative());
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
         l = new BN(formatWei(X.toString()));
     } else {
-        if (configs.AMT_MODE.toLowerCase() === 'eth') {
+        if (configs.amt_mode.toLowerCase() === 'eth') {
+            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
             J = new BN(formatWei(X.toString()));
+            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
             l = await getAmountsOut(formatWei(X.toString()));
             if (chain !== 56 && chain !== 321) l = formatWei(l.toString(), 'szabo');
         } else {
@@ -437,7 +457,8 @@ const estimatedSpendingRouter = async (menuOption, menuSelection = 0) => {
         }
     }
 
-    const u = getUserAddress(settings.PRIVATE_KEY);
+    const u = getUserAddress(settings.private_key);
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     printInfoLine(getSymbol() + ' Spending', '~' + numberWithCommas(Number(formatEther(J)).toFixed(4)) + ' ' + getSymbol() + ' (' + numberWithCommas(Number(formatEther(l)).toFixed(2)) + ' USD)');
     if (menuSelection !== 130 && menuSelection !== 120 && menuSelection !== 110) console.log(chalk.bold('Per Transaction') + ' (Iteration Excluded)');
     console.log('\nPlease make sure you have more than enough ' + getSymbol() + ' balance');
@@ -458,10 +479,11 @@ const estimatedSpendingRouter = async (menuOption, menuSelection = 0) => {
     }).catch(() => bootstrapExchange());
 };
 
-const dxPinkPresaleBot = menuOption => {
+const dxPinkPresaleBot = (menuOption: any) => {
     printHeading((menuOption === 60 ? 'DxSale' : 'PinkSale') + ' Presale Sniper');
 
     contractAddressInput('Presale').then(async contractAddress => {
+        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         if (contractAddress.length === 42) {
             const spinner = ora({ text: ('Loading'), spinner: "aesthetic" }).start();
 
@@ -472,34 +494,49 @@ const dxPinkPresaleBot = menuOption => {
                     console.log('Make sure all the fetched data are correct.');
 
                     console.table({
+                        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                         'Presale Address': l.presaleAddress,
+                        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                         'Token Address': l.tokenAddress,
+                        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                         'Token Name': l.tokenName + ' (' + l.tokenSymbol + ')',
+                        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                         'Min Contribution': numberWithCommas(Number(formatEther(l.minContribution)).toFixed(4)) + ' ' + getSymbol(),
+                        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                         'Max Contribution': numberWithCommas(Number(formatEther(l.maxContribution)).toFixed(4)) + ' ' + getSymbol(),
+                        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                         'Soft/Hard Cap': numberWithCommas(Number(formatEther(l.softCap)).toFixed(0)) + '/' + numberWithCommas(Number(formatEther(l.hardCap)).toFixed(0)) + ' ' + getSymbol(),
+                        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                         'Start Time': new Date(+l.startTime * 1000).toUTCString(),
+                        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                         'End Time': new Date(+l.endTime * 1000).toUTCString()
                     });
 
                     const X = Math.floor(Date.now() / 1000);
 
+                    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                     if (X < +l.endTime) {
+                        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                         if (X < +l.startTime) console.log('Not yet started, but you can set pending orders.');
-                        let amountsOut;
-                        if (configs.AMT_MODE.toLowerCase() === 'usd') amountsOut = await getAmountsOut(chain !== 56 && chain !== 321 ? formatWei(configs.AMOUNT, 'mwei') : formatWei(configs.AMOUNT), getUsd(), getNative());
+                        let amountsOut: any;
+                        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+                        if (configs.amt_mode.toLowerCase() === 'usd') amountsOut = await getAmountsOut(chain !== 56 && chain !== 321 ? formatWei(configs.amount, 'mwei') : formatWei(configs.amount), getUsd(), getNative());
                         else {
-                            if (configs.AMT_MODE.toLowerCase() === 'eth') amountsOut = new BN(formatWei(configs.AMOUNT));
+                            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+                            if (configs.amt_mode.toLowerCase() === 'eth') amountsOut = new BN(formatWei(configs.amount));
                             else {
                                 fileLogger.error('CORE: dxPinkPresaleBot(): Native Error');
                                 throw 'Native Error';
                             }
                         }
+                        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                         if (amountsOut.gte(l.minContribution) && amountsOut.lte(l.maxContribution)) {
+                            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                             printSubInfoLine('Contribution Amount', formatEther(amountsOut) + ' ' + getSymbol());
 
                             confirmProceed().then(async () => {
-                                await executePresaleContribution(getUserAddress(settings.PRIVATE_KEY), settings.PRIVATE_KEY, l.presaleAddress, l.startTime, menuOption, configs, chain, amountsOut).then(() => {
+                                // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+                                await executePresaleContribution(getUserAddress(settings.private_key), settings.private_key, l.presaleAddress, l.startTime, menuOption, configs, chain, amountsOut).then(() => {
                                     printTxnCompleted();
                                     confirmReload().then(() => bootstrapExchange());
                                 });
@@ -529,17 +566,19 @@ const telegramScanner = () => {
 
         fetchTrustWalletTokens(chain).then(D => {
             telegramScannerInput().then(J => {
+                // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                 if (J.toLowerCase() === 'c') return bootstrapExchange();
                 else {
                     const spinner = ora({ text: ('Listening'), spinner: "aesthetic" });
-                    let contractAddress;
-                    let u;
-                    initializeTelegram(telegram, J, async E => {
+                    let contractAddress: any;
+                    let u: any;
+                    initializeTelegram(telegram, J, async (E: any) => {
                         if (typeof E === 'object') return u = E;
 
                         if (!contractAddress) {
                             spinner.info(E ? 'Received Message: { ' + E + ' }' : '< Service Message/Media File >');
                             spinner.start();
+                            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'unknown' is not assignable to pa... Remove this comment to see the full error message
                             E && (await regexMessageForCa(E, D).then(s => {
                                 spinner.stop();
                                 printSubInfoLine('\nFound CA', s);
@@ -550,7 +589,7 @@ const telegramScanner = () => {
                                 stopTelegram();
 
                                 try {
-                                    await executeSniperSwap(getUserAddress(settings.PRIVATE_KEY), settings.PRIVATE_KEY, contractAddress, configs, chain, exchange).then(() => {
+                                    await executeSniperSwap(getUserAddress(settings.private_key), settings.private_key, contractAddress, configs, chain, exchange).then(() => {
                                         printTxnCompleted();
                                         confirmReload().then(() => bootstrapExchange());
                                     });
@@ -572,16 +611,16 @@ const telegramScanner = () => {
     }).catch(G => {
         printErrorHeading('MISCONFIGURED TELEGRAM');
         printReason(G);
-        printLocation(getCoreLocation('telegram.json'));
+        printLocation(getCoreLocation('config.json'));
 
         confirmReload().then(() => {
-            readFile('telegram').then(D => {
-                telegram = D;
+            //readFile('telegram').then(D => {
+                telegram = config.get('telegram');
                 return telegramScanner();
-            }).catch(() => {
-                fileLogger.error('CORE: readFile(): Not Found');
-                return somethingWentWrong();
-            });
+            //}).catch(() => {
+            //    fileLogger.error('CORE: readFile(): Not Found');
+            //    return somethingWentWrong();
+            //});
         });
     });
 };
@@ -590,8 +629,9 @@ const manualInputAddress = () => {
     printHeading('Manual Sniper');
 
     contractAddressInput('Token').then(async contractAddress => {
+        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         if (contractAddress.length === 42) try {
-            await executeSniperSwap(getUserAddress(settings.PRIVATE_KEY), settings.PRIVATE_KEY, contractAddress, configs, chain, exchange).then(() => {
+            await executeSniperSwap(getUserAddress(settings.private_key), settings.private_key, contractAddress, configs, chain, exchange).then(() => {
                 printTxnCompleted();
                 confirmReload().then(() => bootstrapExchange());
             });
@@ -603,7 +643,7 @@ const manualInputAddress = () => {
     });
 };
 
-const fastestAlertsTelegram = (menuOption, menuSelection) => {
+const fastestAlertsTelegram = (menuOption: any, menuSelection: any) => {
     validateTelegram(telegram).then(() => {
         const listing = {
             'name': '',
@@ -630,10 +670,10 @@ const fastestAlertsTelegram = (menuOption, menuSelection) => {
 
         fastestAlertsTelegramConfiguration().then(async u => {
             const spinner = ora({ text: ('Listening'), spinner: "aesthetic" });
-            const E = [];
-            let contractAddress;
-            let j;
-            return initializeTelegram(telegram, 'https://t.me/' + listing.telegram, async x => {
+            const E: any = [];
+            let contractAddress: any;
+            let j: any;
+            return initializeTelegram(telegram, 'https://t.me/' + listing.telegram, async (x: any) => {
                 if (typeof x === 'object') return j = x;
 
                 if (!contractAddress) {
@@ -645,7 +685,7 @@ const fastestAlertsTelegram = (menuOption, menuSelection) => {
                         E.includes(Q) ? (printErrorHeading('Skipping! History: ' + E), spinner.start()) : contractAddress = Q;
                     }));
                     if (contractAddress) try {
-                        await executeSniperSwap(getUserAddress(settings.PRIVATE_KEY), settings.PRIVATE_KEY, contractAddress, configs, chain, exchange, menuSelection).then(() => {
+                        await executeSniperSwap(getUserAddress(settings.private_key), settings.private_key, contractAddress, configs, chain, exchange, menuSelection).then(() => {
                             printTxnCompleted();
                             printHeading(' Fastest Alerts');
                             spinner.start();
@@ -670,28 +710,28 @@ const fastestAlertsTelegram = (menuOption, menuSelection) => {
     }).catch(listing => {
         printErrorHeading('MISCONFIGURED TELEGRAM');
         printReason(listing);
-        printLocation(getCoreLocation('telegram.json'));
+        printLocation(getCoreLocation('config.json'));
 
         confirmReload().then(() => {
-            readFile('telegram').then(l => {
-                telegram = l;
+            //readFile('telegram').then(l => {
+                telegram = config.get('telegram');
                 return fastestAlertsTelegram(menuOption, menuSelection);
-            }).catch(() => {
-                fileLogger.error('CORE: readFile(): Not Found');
-                return somethingWentWrong();
-            });
+            //}).catch(() => {
+            //    fileLogger.error('CORE: readFile(): Not Found');
+            //    return somethingWentWrong();
+            //});
         });
     });
 };
 
-const predictionBot = (menuOption, menuSelection) => {
+const predictionBot = (menuOption: any, menuSelection: any) => {
     printHeading('Prediction Bot');
     console.log('The methodology behind the bot is to calculate the mathematical');
     console.log('expectation and bet strategically.');
 
     confirmProceed().then(async () => {
         try {
-            await executePredictionBot(getUserAddress(settings.PRIVATE_KEY), settings.PRIVATE_KEY, configs, menuOption, menuSelection);
+            await executePredictionBot(getUserAddress(settings.private_key), settings.private_key, configs, menuOption, menuSelection);
         } catch (J) {
             printErrorHeading('PREDICTION BOT ERROR');
             printReason(J);
@@ -699,3 +739,5 @@ const predictionBot = (menuOption, menuSelection) => {
         }
     }).catch(() => bootstrapExchange());
 };
+
+export default initializeFiles;

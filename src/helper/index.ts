@@ -1,29 +1,31 @@
 import BN from 'bn.js';
 import net from 'net';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'node... Remove this comment to see the full error message
 import emoji from 'node-emoji';
 import {
     getPrimary,
     getSecondary,
 } from '../ethereum/index.js';
 
-let primary;
-let secondary;
+let primary: any;
+let secondary: any;
 
 export const initializeHelper = () => {
     return new Promise(G => {
         primary = getPrimary();
         secondary = getSecondary();
+        // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
         return G();
     });
 };
-export const getUserAddress = G => primary.eth.accounts.privateKeyToAccount(G).address;
-export const formatEther = (G, D) => {
+export const getUserAddress = (G: any) => primary.eth.accounts.privateKeyToAccount(G).address;
+export const formatEther = (G: any, D: any) => {
     return primary.utils.fromWei(G.toString(), D);
 };
-export const formatWei = (G, D) => {
+export const formatWei = (G: any, D: any) => {
     return new BN(primary.utils.toWei(G, D));
 };
-export const formatGWei = G => {
+export const formatGWei = (G: any) => {
     return Number(formatEther(G, 'gwei')).toFixed(2);
 };
 export const getPrimaryGas = async () => {
@@ -46,6 +48,7 @@ export const runPrimaryLatencyTests = () => {
     return new Promise(G => {
         const D = primary._provider.url || ((primary._provider.host || null));
         runLatencyTests(D).then(J => {
+            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
             return G(J.min);
         });
     });
@@ -54,16 +57,17 @@ export const runSecondaryLatencyTests = () => {
     return new Promise(G => {
         const D = secondary._provider.url || ((secondary._provider.host || null));
         runLatencyTests(D).then(J => {
+            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
             return G(J.min);
         });
     });
 };
 
-const runLatencyTests = G => {
+const runLatencyTests = (G: any) => {
     return new Promise(D => {
         let J = 0;
 
-        const l = [];
+        const l: any = [];
 
         const X = () => {
             const E = new net.Socket();
@@ -113,7 +117,9 @@ const runLatencyTests = G => {
         const u = () => {
             if (J < 10) X();
             else return D({
+                // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'E' implicitly has an 'any' type.
                 'max': l.reduce((E, s) => E > s.time ? E : s.time, l[0].time),
+                // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'E' implicitly has an 'any' type.
                 'min': l.reduce((E, s) => E < s.time ? E : s.time, l[0].time)
             });
         };
@@ -122,24 +128,25 @@ const runLatencyTests = G => {
     });
 };
 
-export const signThenSendPrimaryTxn = (G, D) => signThenSendTxn(primary, G, D);
-export const signThenSendSecondaryTxn = (G, D) => signThenSendTxn(secondary, G, D);
+export const signThenSendPrimaryTxn = (G: any, D: any) => signThenSendTxn(primary, G, D);
+export const signThenSendSecondaryTxn = (G: any, D: any) => signThenSendTxn(secondary, G, D);
 
-const signThenSendTxn = (G, D, J) => {
+const signThenSendTxn = (G: any, D: any, J: any) => {
     return new Promise((l, X) => {
-        G.eth.accounts.signTransaction(D, J, (u, E) => {
-            if (!u && E.rawTransaction) G.eth.sendSignedTransaction(E.rawTransaction, (s, j) => !s ? l(j) : X(s)).catch(() => {});
+        G.eth.accounts.signTransaction(D, J, (u: any, E: any) => {
+            if (!u && E.rawTransaction) G.eth.sendSignedTransaction(E.rawTransaction, (s: any, j: any) => !s ? l(j) : X(s)).catch(() => {});
             else return X(u);
         }).catch(() => {});
     });
 };
 
-export const isPrimaryContract = G => isContract(primary, G);
-export const isSecondaryContract = G => isContract(secondary, G);
+export const isPrimaryContract = (G: any) => isContract(primary, G);
+export const isSecondaryContract = (G: any) => isContract(secondary, G);
 
-const isContract = (G, D) => {
+const isContract = (G: any, D: any) => {
     return new Promise((J, l) => {
-        if (G.utils.isAddress(D)) G.eth.getCode(D).then(X => {
+        if (G.utils.isAddress(D)) G.eth.getCode(D).then((X: any) => {
+            // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
             if (X !== '0x') return J();
             return l();
         });
@@ -147,13 +154,13 @@ const isContract = (G, D) => {
     });
 };
 
-export const numberWithCommas = G => {
+export const numberWithCommas = (G: any) => {
     return G.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
 };
 
-let regexMessageForCa_memory;
+let regexMessageForCa_memory: any;
 
-export const regexMessageForCa = (G, D = []) => {
+export const regexMessageForCa = (G: any, D = []) => {
     return new Promise(J => {
         const l = {
             'zero': '0',
@@ -201,13 +208,14 @@ export const regexMessageForCa = (G, D = []) => {
             if (regexMessageForCa_memory.length === 42) x = regexMessageForCa_memory;
         }
 
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'toLowerCase' does not exist on type 'nev... Remove this comment to see the full error message
         x && (D.findIndex(U => x.toLowerCase() === U.toLowerCase()) === -1 || x.toLowerCase() === '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82') && isPrimaryContract(x).then(() => J(x)).catch(() => {
             regexMessageForCa_memory = '';
         });
     });
 };
 
-export const regexFastestAlertsMessage = (G, D) => {
+export const regexFastestAlertsMessage = (G: any, D: any) => {
     return new Promise(J => {
         const l = new RegExp(emoji.get('red_circle'));
         const X = /Liquidity(.*)BNB/i;
