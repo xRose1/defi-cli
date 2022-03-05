@@ -3,10 +3,10 @@ import {
     getSecondary
 } from '../ethereum/index.js';
 
-export const fetchPresaleContract = (contractAddress, menuOption) => {
+export const fetchPresaleContract = (contractAddress: any, menuOption: any) => {
     return new Promise((J, l) => {
         const X = getSecondary();
-        let u;
+        let u: any;
 
         switch (menuOption) {
             case 60:
@@ -163,7 +163,7 @@ export const fetchPresaleContract = (contractAddress, menuOption) => {
                 return l('Launchpad EOFError');
         }
 
-        u.methods.token().call().then(async E => {
+        u.methods.token().call().then(async (E: any) => {
             const s = new X.eth.Contract([{
                     'constant': true,
                     'inputs': [],

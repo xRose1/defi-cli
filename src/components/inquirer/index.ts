@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'inqu... Remove this comment to see the full error message
 import inquirer from 'inquirer';
 
 const previousMenu = {
@@ -16,7 +17,8 @@ export const agreeDisclaimer = () => {
             'type': 'confirm',
             'name': 'confirm',
             'message': 'Do you agree with the disclaimer?'
-        }]).then(D => {
+        }]).then((D: any) => {
+            // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
             if (D.confirm) return G();
             return process.exit();
         });
@@ -48,18 +50,18 @@ export const chainSelectionChoices = () => {
                 'name': 'Avalanche Mainnet',
                 'value': 43114
             }, new inquirer.Separator(), quitCli]
-        }]).then(D => {
+        }]).then((D: any) => {
             return G(D.list);
         });
     });
 };
-export const exchangeSelection = chain => {
+export const exchangeSelection = (chain: any) => {
     return new Promise(exchangeSelection => {
         const J = {
             'name': 'Launchpad',
             'value': 'LAUNCH'
         };
-        let l;
+        let l: any;
 
         switch (chain) {
             case 1:
@@ -137,12 +139,12 @@ export const exchangeSelection = chain => {
             'message': 'Select Exchange:',
             'pageSize': 88,
             'choices': l
-        }]).then(exchange => {
+        }]).then((exchange: any) => {
             return exchangeSelection(exchange.list);
         });
     });
 };
-export const exchangeMenuSelection = exchange => {
+export const exchangeMenuSelection = (exchange: any) => {
     return new Promise(D => {
         const reload = {
                 'name': 'Reload Configuration',
@@ -159,7 +161,7 @@ export const exchangeMenuSelection = exchange => {
             'value': 1
         };
 
-        let choices;
+        let choices: any;
 
         switch (exchange) {
             case 'UNI':
@@ -299,7 +301,7 @@ export const exchangeMenuSelection = exchange => {
                 'name': 'Mempool On-Chain Order',
                 'value': 130
             }, new inquirer.Separator(), previousMenu],
-            'when': exchangeChoice => exchangeChoice.option === 10
+            'when': (exchangeChoice: any) => exchangeChoice.option === 10
         }, {
             'type': 'list',
             'name': 'selection',
@@ -312,7 +314,7 @@ export const exchangeMenuSelection = exchange => {
                 'name': 'Direct API Listener',
                 'value': 342
             }, new inquirer.Separator(), previousMenu],
-            'when': exchangeChoice => {
+            'when': (exchangeChoice: any) => {
                 return exchangeChoice.option === 30 || exchangeChoice.option === 40;
             }
         }, {
@@ -330,10 +332,10 @@ export const exchangeMenuSelection = exchange => {
                 'name': 'SS + Martingale Strategy',
                 'value': 593
             }, new inquirer.Separator(), previousMenu],
-            'when': exchangeChoice => {
+            'when': (exchangeChoice: any) => {
                 return exchangeChoice.option === 50 || exchangeChoice.option === 90 || exchangeChoice.option === 91 || exchangeChoice.option === 92;
             }
-        }]).then(exchangeChoice => D(exchangeChoice));
+        }]).then((exchangeChoice: any) => D(exchangeChoice));
     });
 };
 export const telegramScannerInput = () => {
@@ -343,46 +345,46 @@ export const telegramScannerInput = () => {
             'name': 'input',
             'message': 'Group/Channel:',
 
-            'validate'(D) {
+            'validate'(D: any) {
                 if (D && !D.match(/CMC_fastest_alerts\s?/i) && !D.match(/CG_fastest_alerts\s?/i)) return true;
                 return 'Enter the share link or username... Type `c` to cancel.';
             }
 
-        }]).then(D => {
+        }]).then((D: any) => {
             return G(D.input);
         });
     });
 };
-export const telegramScannerLogin = (G, D) => {
+export const telegramScannerLogin = (G: any, D: any) => {
     return new Promise(J => {
         inquirer.prompt([{
             'type': D ? 'password' : 'input',
             'name': 'input',
             'message': G,
 
-            'validate'(l) {
+            'validate'(l: any) {
                 if (l) return true;
                 return 'Input cannot be empty...';
             }
 
-        }]).then(l => {
+        }]).then((l: any) => {
             return J(l.input);
         });
     });
 };
-export const contractAddressInput = contractType => {
+export const contractAddressInput = (contractType: any) => {
     return new Promise(D => {
         inquirer.prompt([{
             'type': 'input',
             'name': 'input',
             'message': contractType + ' Address:',
 
-            'validate'(contractInput) {
+            'validate'(contractInput: any) {
                 if (contractInput.match(/0x(.*)\s?/i) && contractInput.length === 42 || contractInput.toLowerCase() === 'c') return true;
                 return 'Invalid contract address... Type `c` to cancel.';
             }
 
-        }]).then(contractInput => {
+        }]).then((contractInput: any) => {
             return D(contractInput.input);
         });
     });
@@ -409,7 +411,7 @@ export const fastestAlertsTelegramConfiguration = () => {
             'name': 'maxTax',
             'message': 'Maximum Buy/Sell Tax:',
             'default': '20'
-        }]).then(D => {
+        }]).then((D: any) => {
             return G({
                 'minLiq': D.minLiq,
                 'maxLiq': D.maxLiq,
@@ -425,7 +427,8 @@ export const confirmReload = () => {
             'type': 'confirm',
             'name': 'confirm',
             'message': 'Reload now?'
-        }]).then(D => {
+        }]).then((D: any) => {
+            // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
             if (D.confirm) return G();
             return process.exit();
         });
@@ -437,7 +440,8 @@ export const confirmProceed = () => {
             'type': 'confirm',
             'name': 'confirm',
             'message': 'Proceed now?'
-        }]).then(J => {
+        }]).then((J: any) => {
+            // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
             if (J.confirm) return G();
             return D();
         });
@@ -450,6 +454,7 @@ export const temporaryUnavailable = () => {
             'name': 'list',
             'message': 'Temporary unavailable at this time.',
             'choices': [previousMenu]
+        // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
         }]).then(() => G());
     });
 };

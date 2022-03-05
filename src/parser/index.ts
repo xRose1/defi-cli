@@ -19,26 +19,26 @@ import {
     fetchPresaleContract
 } from '../launchpad/index.js';
 
-export const initializePresaleContract = (contractAddress, menuOption) => {
+export const initializePresaleContract = (contractAddress: any, menuOption: any) => {
     return new Promise((J, l) => {
         isSecondaryContract(contractAddress).then(() => {
             fetchPresaleContract(contractAddress, menuOption).then(X => J(X)).catch(X => l(X));
         }).catch(() => l('Invalid Contract Address'));
     });
 };
-export const executePresaleContribution = async (userAddress, privateKey, presaleAddress, startTime, menuOption, configs, chain, amountsOut) => {
+export const executePresaleContribution = async (userAddress: any, privateKey: any, presaleAddress: any, startTime: any, menuOption: any, configs: any, chain: any, amountsOut: any) => {
     printSubHeading('Blockchain Transaction');
     await contributeToPresale(userAddress, privateKey, presaleAddress, startTime, menuOption, configs, chain, amountsOut).catch(Q => {
         throw Q;
     });
 };
-export const executeSniperSwap = async (userAddress, privateKey, contractAddress, configs, chain, exchange, menuSelection = 1) => {
+export const executeSniperSwap = async (userAddress: any, privateKey: any, contractAddress: any, configs: any, chain: any, exchange: any, menuSelection = 1) => {
     printHeading('Sniper Execution');
 
-    if (configs.HONEYPOT_CHECK.toLowerCase() === 'true') {
+    if (configs.honeypot_check.toLowerCase() === 'true') {
         printSubHeading(`RugDoc's Honeypot Token Checker`);
         const spinner = ora({ text: ('Checking'), spinner: "aesthetic" }).start();
-        await checkForHoneypot(contractAddress, configs.BLOCK_SEVERE_FEE.toLowerCase(), chain).then(Q => {
+        await checkForHoneypot(contractAddress, configs.block_severe_fee.toLowerCase(), chain).then(Q => {
             spinner.stop();
             console.log(Q);
         }).catch(Q => {
@@ -55,7 +55,7 @@ export const executeSniperSwap = async (userAddress, privateKey, contractAddress
         throw Q;
     });
 };
-export const executePredictionBot = async (userAddress, privateKey, configs, menuOption, menuSelection) => {
+export const executePredictionBot = async (userAddress: any, privateKey: any, configs: any, menuOption: any, menuSelection: any) => {
     printSubHeading('Blockchain Transaction');
     console.log('Press the <CTRL+C> key to quit.\n');
     await predictionBotMethodology(userAddress, privateKey, configs, menuOption, menuSelection).catch(s => {

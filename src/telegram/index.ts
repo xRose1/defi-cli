@@ -6,17 +6,17 @@ import {
     MTProtoAPI
 } from '../components/mtproto/index.js';
 
-let api;
+let api: any;
 
 const spinner = ora({ text: ('Pending'), spinner: "aesthetic" });
 
-export const initializeTelegram = async (G, D, J) => {
+export const initializeTelegram = async (G: any, D: any, J: any) => {
     api = new MTProtoAPI(G), await startTelegram(G, J);
     const l = await getChatByName(D, J);
     spinner.succeed('Chat Found: { id: ' + l.id + ', title: ' + l.title + ', username: ' + l.username + ' }');
     J();
 
-    api.startListenToUpdates(async X => {
+    api.startListenToUpdates(async (X: any) => {
         if (X.updates)
             for (const u of X.updates) {
                 u.message && (await readMessage(u.message, l, J));
@@ -24,12 +24,13 @@ export const initializeTelegram = async (G, D, J) => {
     });
 };
 
-const startTelegram = async (G, D) => {
+const startTelegram = async (G: any, D: any) => {
         try {
             spinner.start(), await api.call('updates.getState'), spinner.stop();
-        } catch (J) {
+        } catch (err: any) {
             spinner.stop();
-            if (J.error_code === 401) try {
+            if (err.error_code === 401) try {
+                // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                 const l = await telegramScannerLogin('Please enter your number in international format (e.g. +12223334455):');
                 spinner.start();
                 const X = await api.call('auth.sendCode', {
@@ -41,15 +42,16 @@ const startTelegram = async (G, D) => {
                     }
                 });
                 spinner.stop();
+                // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                 const u = await telegramScannerLogin('Enter confirmation code:');
                 spinner.start(), await api.call('auth.signIn', {
                     'phone_number': l,
                     'phone_code': u,
                     'phone_code_hash': X.phone_code_hash
                 }), spinner.stop();
-            } catch (E) {
+            } catch (error: any) {
                 spinner.stop();
-                if (E.error_message === 'SESSION_PASSWORD_NEEDED') try {
+                if (error.error_message === 'SESSION_PASSWORD_NEEDED') try {
                     const s = await telegramScannerLogin('Two-step verification code:', true);
                     spinner.start();
 
@@ -89,19 +91,19 @@ const startTelegram = async (G, D) => {
                 } catch (H) {
                     spinner.stop();
                     throw D(H);
-                } else throw D(E);
-            } else throw D(J);
+                } else throw D(error);
+            } else throw D(err);
         }
     };
 
-const getChatByName = async (G, D) => {
+const getChatByName = async (G: any, D: any) => {
     spinner.start();
 
     const J = await api.call('messages.getAllChats', {
             'except_ids': []
         });
 
-    const l = J.chats.find(X => X.username === G || 'https://t.me/' + X.username === G);
+    const l = J.chats.find((X: any) => X.username === G || 'https://t.me/' + X.username === G);
     spinner.stop();
     if (l) return l;
     throw D({
@@ -110,7 +112,7 @@ const getChatByName = async (G, D) => {
     });
 };
 
-const readMessage = async (G, D, J) => {
+const readMessage = async (G: any, D: any, J: any) => {
     let l;
     let X;
     const u = ['162726413', '210944655', '553147242', '556736531', '609517172', '660783114', '696267355', '771096498', '357869031'];

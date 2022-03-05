@@ -1,9 +1,11 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'abi-... Remove this comment to see the full error message
 import abiDecoder from 'abi-decoder';
 import BN from 'bn.js';
 import chalk from 'chalk';
 import readline from 'readline';
 import {
     sleep
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@mtp... Remove this comment to see the full error message
 } from '@mtproto/core/src/utils/common/index.js';
 import ora from 'ora';
 import {
@@ -44,14 +46,14 @@ import {
     swapExactTokensForKCSSupportingFeeOnTransferTokens_abi
 } from './abiItem.js';
 
-let web3;
-let secondary;
-let contract;
-let symbol;
-let native;
-let usd;
+let web3: any;
+let secondary: any;
+let contract: any;
+let symbol: any;
+let native: any;
+let usd: any;
 
-export const initializeExchange = (chain, exchange) => {
+export const initializeExchange = (chain: any, exchange: any) => {
     return new Promise(J => {
         web3 = getPrimary();
         secondary = getSecondary();
@@ -181,22 +183,23 @@ export const initializeExchange = (chain, exchange) => {
 
         if (abiDecoder.getABIs() !== []) abiDecoder.removeABI(abiDecoder_abis);
         abiDecoder.addABI(abiDecoder_abis);
+        // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
         return J();
     });
 };
 export const getSymbol = () => symbol;
 export const getNative = () => native;
 export const getUsd = () => usd;
-export const getBalance = async G => {
+export const getBalance = async (G: any) => {
     return new BN(await web3.eth.getBalance(G));
 };
-export const getAmountsOut = async (G, D = native, J = usd) => {
+export const getAmountsOut = async (G: any, D = native, J = usd) => {
     const l = new BN('0');
     if (G.lte(l)) return l;
     const X = (await contract.router.methods.getAmountsOut(G.toString(), [D, J]).call()) || [G.toString(), '0'];
     return new BN(X[1]);
 };
-export const contributeToPresale = (userAddress, privateKey, presaleAddress, startTime, menuOption, configs, chain, amountsOut) => {
+export const contributeToPresale = (userAddress: any, privateKey: any, presaleAddress: any, startTime: any, menuOption: any, configs: any, chain: any, amountsOut: any) => {
     return new Promise(async (x, p) => {
         const spinner = ora({ text: ('Pending'), spinner: "aesthetic" }).start();
         const txConfig = chain !== 1 && chain !== 4 ? {
@@ -204,7 +207,7 @@ export const contributeToPresale = (userAddress, privateKey, presaleAddress, sta
             'to': presaleAddress,
             'value': web3.utils.toHex(amountsOut),
             'gasLimit': undefined,
-            'gasPrice': web3.utils.toHex(configs.GAS_PRICE === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.GAS_PRICE, 'gwei')),
+            'gasPrice': web3.utils.toHex(configs.gas_price === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.gas_price, 'gwei')),
             'data': undefined,
             'nonce': undefined,
             'chainId': chain
@@ -213,8 +216,8 @@ export const contributeToPresale = (userAddress, privateKey, presaleAddress, sta
             'to': presaleAddress,
             'value': web3.utils.toHex(amountsOut),
             'gasLimit': undefined,
-            'maxFeePerGas': web3.utils.toHex(configs.GAS_PRICE === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.GAS_PRICE, 'gwei')),
-            'maxPriorityFeePerGas': web3.utils.toHex(formatWei(configs.PRIORITY_GAS, 'gwei')),
+            'maxFeePerGas': web3.utils.toHex(configs.gas_price === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.gas_price, 'gwei')),
+            'maxPriorityFeePerGas': web3.utils.toHex(formatWei(configs.priority_gas, 'gwei')),
             'type': web3.utils.toHex('2'),
             'data': undefined,
             'nonce': undefined,
@@ -223,17 +226,19 @@ export const contributeToPresale = (userAddress, privateKey, presaleAddress, sta
 
         await executeSwap();
 
+        // @ts-expect-error ts-migrate(7023) FIXME: 'executeSwap' implicitly has return type 'any' bec... Remove this comment to see the full error message
         async function executeSwap() {
             const A = Math.floor(Date.now() / 1000);
             if (A <= +startTime) return spinner.start('Pending / Time Now: ' + new Date().toUTCString()), await sleep(1000), await executeSwap();
-            else web3.eth.getTransactionCount(userAddress, 'pending').then(nonce => {
-                if (menuOption === 60) web3.eth.estimateGas(txConfig, async (err, estimatedGas) => {
+            else web3.eth.getTransactionCount(userAddress, 'pending').then((nonce: any) => {
+                if (menuOption === 60) web3.eth.estimateGas(txConfig, async (err: any, estimatedGas: any) => {
                     if (!err) {
                         txConfig.gasLimit = web3.utils.toHex(Math.round(estimatedGas * 2.5))
                         txConfig.nonce = nonce;
                         signThenSendPrimaryTxn(txConfig, privateKey).then(g => {
                             spinner.succeed('Contribute Tx: ' + g);
                             spinner.stop();
+                            // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
                             return x();
                         }).catch(g => {
                             spinner.stop();
@@ -256,7 +261,7 @@ export const contributeToPresale = (userAddress, privateKey, presaleAddress, sta
                             'stateMutability': 'payable',
                             'type': 'function'
                         }], presaleAddress);
-                        w.methods.contribute().estimateGas(txConfig, async (err, estimatedGas) => {
+                        w.methods.contribute().estimateGas(txConfig, async (err: any, estimatedGas: any) => {
                             if (!err) {
                                 txConfig.gasLimit = web3.utils.toHex(Math.round(parseInt(estimatedGas) * 2.5));
                                 txConfig.data = w.methods.contribute().encodeABI();
@@ -264,6 +269,7 @@ export const contributeToPresale = (userAddress, privateKey, presaleAddress, sta
                                 signThenSendPrimaryTxn(txConfig, privateKey).then(b => {
                                     spinner.succeed('Contribute Tx: ' + b);
                                     spinner.stop();
+                                    // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
                                     return x();
                                 }).catch(b => {
                                     spinner.stop();
@@ -282,15 +288,17 @@ export const contributeToPresale = (userAddress, privateKey, presaleAddress, sta
         }
     });
 };
-export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, configs, chain, exchange) => {
+export const swapExactETHForTokens = (userAddress: any, privateKey: any, contractAddress: any, configs: any, chain: any, exchange: any) => {
     return new Promise((j, x) => {
         const spinner = ora({ text: ('Pending'), spinner: "aesthetic" }).start();
-        let iteration;
-        let U;
-        let amountsOut;
-        if (configs.AMT_MODE.toLowerCase() === 'usd') amountsOut = getAmountsOut(chain !== 56 && chain !== 321 ? formatWei(configs.AMOUNT, 'mwei') : formatWei(configs.AMOUNT), usd, native);
+        let iteration: any;
+        let U: any;
+        let amountsOut: any;
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+        if (configs.amt_mode.toLowerCase() === 'usd') amountsOut = getAmountsOut(chain !== 56 && chain !== 321 ? formatWei(configs.amount, 'mwei') : formatWei(configs.amount), usd, native);
         else {
-            if (configs.AMT_MODE.toLowerCase() === 'eth') amountsOut = new BN(formatWei(configs.AMOUNT));
+            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+            if (configs.amt_mode.toLowerCase() === 'eth') amountsOut = new BN(formatWei(configs.amount));
             else {
                 fileLogger.error('CORE: swapExactETHForTokens(): Native Error');
                 throw 'Native Error';
@@ -300,7 +308,8 @@ export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, 
             'to': contract.router._address,
             'value': web3.utils.toHex(amountsOut),
             'gasLimit': undefined,
-            'gasPrice': web3.utils.toHex(configs.GAS_PRICE === '0' ? (getPrimaryGas()).mul(new BN('3')) : formatWei(configs.GAS_PRICE, 'gwei')),
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'mul' does not exist on type 'Promise<BN>... Remove this comment to see the full error message
+            'gasPrice': web3.utils.toHex(configs.gas_price === '0' ? (getPrimaryGas()).mul(new BN('3')) : formatWei(configs.gas_price, 'gwei')),
             'data': undefined,
             'nonce': undefined,
             'chainId': chain
@@ -308,8 +317,9 @@ export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, 
             'to': contract.router._address,
             'value': web3.utils.toHex(amountsOut),
             'gasLimit': undefined,
-            'maxFeePerGas': web3.utils.toHex(configs.GAS_PRICE === '0' ? (getPrimaryGas()).mul(new BN('3')) : formatWei(configs.GAS_PRICE, 'gwei')),
-            'maxPriorityFeePerGas': web3.utils.toHex(formatWei(configs.PRIORITY_GAS, 'gwei')),
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'mul' does not exist on type 'Promise<BN>... Remove this comment to see the full error message
+            'maxFeePerGas': web3.utils.toHex(configs.gas_price === '0' ? (getPrimaryGas()).mul(new BN('3')) : formatWei(configs.gas_price, 'gwei')),
+            'maxPriorityFeePerGas': web3.utils.toHex(formatWei(configs.priority_gas, 'gwei')),
             'type': web3.utils.toHex('2'),
             'data': undefined,
             'nonce': undefined,
@@ -319,21 +329,22 @@ export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, 
         return executeSwap();
 
         function executeSwap() {
-            web3.eth.getTransactionCount(userAddress, 'pending').then(nonce => {
-                contract.router.methods.getAmountsOut(amountsOut.toString(), [native, contractAddress]).call({}, async (err, amountsOutMin) => {
+            web3.eth.getTransactionCount(userAddress, 'pending').then((nonce: any) => {
+                contract.router.methods.getAmountsOut(amountsOut.toString(), [native, contractAddress]).call({}, async (err: any, amountsOutMin: any) => {
                     if (!err) {
                         let amountsOut = new BN(amountsOutMin[1]);
-                        amountsOut = amountsOut.sub(amountsOut.mul(new BN(configs.SLIPPAGE)).div(new BN('100'))).toString();
+                        // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'BN'.
+                        amountsOut = amountsOut.sub(amountsOut.mul(new BN(configs.slippage)).div(new BN('100'))).toString();
                         const swapExactForTokens = exchange === 'KOFFEE' ? contract.router.methods.swapExactKCSForTokens : exchange === 'TRADER' ? contract.router.methods.swapExactAVAXForTokens : contract.router.methods.swapExactETHForTokens;
                         swapExactForTokens(amountsOut, [native, contractAddress], userAddress, getDeadline()).estimateGas({
                             'from': userAddress,
                             'gas': 100000000,
                             'value': txConfig.value
-                        }, async (err, estimatedGas) => {
+                        }, async (err: any, estimatedGas: any) => {
                             if (!err) {
                                 txConfig.gasLimit = web3.utils.toHex(Math.round(parseInt(estimatedGas) * 3));
                                 txConfig.data = swapExactForTokens(amountsOut, [native, contractAddress], userAddress, getDeadline()).encodeABI();
-                                if (iteration === 0) await sleep(parseFloat(configs.DELAY_EXECUTION) * 1000);
+                                if (iteration === 0) await sleep(parseFloat(configs.delay_execution) * 1000);
                                 approveToken(nonce).then(i => {
                                     i && (spinner.succeed('Approve() Tx: ' + i), U = process.hrtime(), ++nonce);
                                     spinner.stop();
@@ -343,10 +354,11 @@ export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, 
                                     signThenSendPrimaryTxn(txConfig, privateKey).then(async M => {
                                         spinner.succeed('Swap Tx: ' + M);
                                         ++iteration;
-                                        if (iteration !== parseInt(configs.ITERATION)) return spinner.start(), await sleep(parseFloat(configs.DELAY_ITERATION) * 1000), executeSwap();
+                                        if (iteration !== parseInt(configs.iteration)) return spinner.start(), await sleep(parseFloat(configs.delay_iteration) * 1000), executeSwap();
                                         spinner.stop();
                                         const N = process.hrtime(U);
                                         console.log('\nSubmitted at: ' + (await getSecondaryBlock()) + ' / Took: ' + (Number((N[0] * 1000000000 + N[1]) / 1000000) / 1000).toFixed(4) + ' seconds');
+                                        // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
                                         return j();
                                     }).catch(M => {
                                         spinner.stop();
@@ -365,8 +377,9 @@ export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, 
             });
         }
 
-        function approveToken(nonce) {
+        function approveToken(nonce: any) {
             return new Promise((C, H) => {
+                // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
                 if (iteration !== 0) return C();
                 const g = new web3.eth.Contract([{
                     'inputs': [{
@@ -391,12 +404,12 @@ export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, 
                     'from': userAddress,
                     'gas': 100000000,
                     'value': 0
-                }, async (err, estimatedGas) => {
+                }, async (err: any, estimatedGas: any) => {
                     if (!err) signThenSendPrimaryTxn(chain !== 1 && chain !== 4 ? {
                         'to': contractAddress,
                         'value': web3.utils.toHex('0'),
                         'gasLimit': web3.utils.toHex(Math.round(parseInt(estimatedGas) * 2.5)),
-                        'gasPrice': web3.utils.toHex(configs.GAS_PRICE === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.GAS_PRICE, 'gwei')),
+                        'gasPrice': web3.utils.toHex(configs.gas_price === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.gas_price, 'gwei')),
                         'data': g.methods.approve(contract.router._address, maxUint256()).encodeABI(),
                         'nonce': nonce,
                         'chainId': chain
@@ -404,8 +417,8 @@ export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, 
                         'to': contractAddress,
                         'value': web3.utils.toHex('0'),
                         'gasLimit': web3.utils.toHex(Math.round(parseInt(estimatedGas) * 2.5)),
-                        'maxFeePerGas': web3.utils.toHex(configs.GAS_PRICE === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.GAS_PRICE, 'gwei')),
-                        'maxPriorityFeePerGas': web3.utils.toHex(formatWei(configs.PRIORITY_GAS, 'gwei')),
+                        'maxFeePerGas': web3.utils.toHex(configs.gas_price === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.gas_price, 'gwei')),
+                        'maxPriorityFeePerGas': web3.utils.toHex(formatWei(configs.priority_gas, 'gwei')),
                         'type': web3.utils.toHex('2'),
                         'data': g.methods.approve(contract.router._address, maxUint256()).encodeABI(),
                         'nonce': nonce,
@@ -418,11 +431,11 @@ export const swapExactETHForTokens = (userAddress, privateKey, contractAddress, 
     });
 };
 
-export const afterSwapMonitor = (userAddress, privateKey, contractAddress, configs, chain, exchange, menuSelection) => {
+export const afterSwapMonitor = (userAddress: any, privateKey: any, contractAddress: any, configs: any, chain: any, exchange: any, menuSelection: any) => {
     return new Promise(async (s, j) => {
-        let balance;
-        let decimals;
-        let symbol;
+        let balance: any;
+        let decimals: any;
+        let symbol: any;
         const spinner = ora({ text: ('Indexing'), spinner: "aesthetic" }).start();
 
         const z = process.hrtime();
@@ -473,35 +486,37 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
             return await e();
         }
 
+        // @ts-expect-error ts-migrate(7023) FIXME: 'e' implicitly has return type 'any' because it do... Remove this comment to see the full error message
         async function e() {
             const w = new BN('0');
             const C = new BN(await O.methods.balanceOf(userAddress).call());
             if (C.lte(balance)) return await e();
             let H = false;
-            let g;
+            let g: any;
             let b = false;
-            let R;
-            let y;
+            let R: any;
+            let y: any;
             let i = w;
             let c = true;
             let M = false;
             const N = process.hrtime(z);
             spinner.succeed('Indexed at: ' + (await getSecondaryBlock()) + ' / Took: ' + (Number((N[0] * 1000000000 + N[1]) / 1000000) / 1000).toFixed(4) + ' seconds');
 
-            if (configs.RUG_PULL_CHECK.toLowerCase() === 'true' && menuSelection !== 341 && menuSelection !== 342) {
+            if (configs.rug_pull_check.toLowerCase() === 'true' && menuSelection !== 341 && menuSelection !== 342) {
                 H = true;
                 printSubHeading('Liquidity Rug Pull Checker');
                 const d = 'Listening for `removeLiquidity` transaction in the background.';
-                configs.SELL_MANAGEMENT.toLowerCase() === 'true' ? spinner.info(d) : spinner.start(d);
+                configs.sell_management.toLowerCase() === 'true' ? spinner.info(d) : spinner.start(d);
 
-                g = web3.eth.subscribe('pendingTransactions', async (a, K) => {
+                g = web3.eth.subscribe('pendingTransactions', async (a: any, K: any) => {
                     const S = await web3.eth.getTransaction(K);
 
                     if (S != null && S.to === contract.router._address && S.input !== '0x') {
                         const q = abiDecoder.decodeMethod(S.input);
                         const F = ['removeLiquidity', 'removeLiquidityETH', 'removeLiquidityKCS', 'removeLiquidityAVAX', 'removeLiquidityETHSupportingFeeOnTransferTokens', 'removeLiquidityKCSSupportingFeeOnTransferTokens', 'removeLiquidityAVAXSupportingFeeOnTransferTokens', 'removeLiquidityETHWithPermit', 'removeLiquidityKCSWithPermit', 'removeLiquidityAVAXWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens', 'removeLiquidityKCSWithPermitSupportingFeeOnTransferTokens', 'removeLiquidityAVAXWithPermitSupportingFeeOnTransferTokens', 'removeLiquidityWithPermit'];
-                        q && F.includes(q.name) && (q.params[0].value && q.params[0].value.toLowerCase() === contractAddress.toLowerCase() || q.params[1].value && q.params[1].value.toLowerCase() === contractAddress.toLowerCase()) && (configs.SELL_MANAGEMENT.toLowerCase() === 'true' && (clearInterval(R), spinner.fail('Closed Value: ' + y)), spinner.warn('Detected `removeLiquidity` Tx: ' + S.hash), r('100', new BN(S.gasPrice).mul(new BN('125')).div(new BN('100'))).then(Y => {
+                        q && F.includes(q.name) && (q.params[0].value && q.params[0].value.toLowerCase() === contractAddress.toLowerCase() || q.params[1].value && q.params[1].value.toLowerCase() === contractAddress.toLowerCase()) && (configs.sell_management.toLowerCase() === 'true' && (clearInterval(R), spinner.fail('Closed Value: ' + y)), spinner.warn('Detected `removeLiquidity` Tx: ' + S.hash), r('100', new BN(S.gasPrice).mul(new BN('125')).div(new BN('100'))).then(Y => {
                             spinner.succeed('Swap Tx: ' + Y + '\n');
+                            // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
                             T().then(() => s());
                         }).catch(Y => {
                             spinner.stop();
@@ -512,7 +527,7 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
                 });
             }
 
-            configs.SELL_MANAGEMENT.toLowerCase() === 'true' && menuSelection !== 341 && menuSelection !== 342 && (b = true, printSubHeading('Sell Management'), console.log('Press the <Q> key to sell 25% of your bag.'), console.log('Press the <W> key to sell 50% of your bag.'), console.log('Press the <E> key to sell 75% of your bag.'), console.log('Press the <R> key to sell 100% of your bag.\n'), spinner.start('Loading'), R = B());
+            configs.sell_management.toLowerCase() === 'true' && menuSelection !== 341 && menuSelection !== 342 && (b = true, printSubHeading('Sell Management'), console.log('Press the <Q> key to sell 25% of your bag.'), console.log('Press the <W> key to sell 50% of your bag.'), console.log('Press the <E> key to sell 75% of your bag.'), console.log('Press the <R> key to sell 100% of your bag.\n'), spinner.start('Loading'), R = B());
 
             function B() {
                 return setInterval(async () => {
@@ -523,6 +538,7 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
                         const K = await getAmountsOut(a, contractAddress, native);
                         let S = await getAmountsOut(K);
                         if (chain !== 56 && chain !== 321) S = formatWei(S.toString(), 'szabo');
+                        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                         if (decimals === 18) a = formatEther(a);
                         else {
                             if (decimals === 15) a = formatEther(a, 'kwei');
@@ -532,14 +548,18 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
                                     if (decimals === 9) a = formatEther(a, 'gwei');
                                     else {
                                         if (decimals === 6) a = formatEther(a, 'szabo');
+                                        // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'BN'.
                                         else decimals === 3 ? a = formatEther(a, 'finney') : a = a.div(new BN('10').pow(new BN(decimals))).toString();
                                     }
                                 }
                             }
                         }
-                        let q = configs.AMT_MODE.toLowerCase() === 'eth' ? K : S;
-                        q = Number(formatEther(q)) / (parseFloat(configs.AMOUNT) * parseInt(configs.ITERATION));
+                        let q = configs.amt_mode.toLowerCase() === 'eth' ? K : S;
+                        // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'BN'.
+                        q = Number(formatEther(q)) / (parseFloat(configs.amount) * parseInt(configs.iteration));
+                        // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'BN'.
                         q = q > 1 ? chalk.bgGreen.bold(' ' + Number(q).toFixed(2) + ' ') : q < 1 ? chalk.bgRed.bold(' ' + Number(q).toFixed(2) + ' ') : Number(q).toFixed(4);
+                        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                         y = numberWithCommas(Number(a).toFixed(4)) + ' ' + symbol.toUpperCase() + ' (' + numberWithCommas(Number(formatEther(K)).toFixed(4)) + ' ' + symbol + ' / ' + numberWithCommas(Number(formatEther(S)).toFixed(2)) + ' USD) @ ' + q + ' x Multiplier';
                         spinner.start('Live Value: ' + y);
                     } else {
@@ -551,7 +571,7 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
 
             (H || b) && (readline.emitKeypressEvents(process.stdin), process.stdin.setRawMode(true), process.stdin.resume(), process.stdin.on('keypress', L));
 
-            async function L(a, K) {
+            async function L(a: any, K: any) {
                 if (c && b && K && (K.name === 'q' || K.name === 'w' || K.name === 'e' || K.name === 'r')) {
                     const S = K.name === 'q' ? '25' : K.name === 'w' ? '50' : K.name === 'e' ? '75' : '100';
                     clearInterval(R);
@@ -562,6 +582,7 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
 
                     r(S, await getPrimaryGas()).then(q => {
                         spinner.succeed('Swap Tx: ' + q + '\n');
+                        // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
                         K.name === 'r' ? T().then(() => s()) : (spinner.start('Loading'), R = B());
                     }).catch(q => {
                         spinner.stop();
@@ -570,13 +591,14 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
                     });
                 } else K?.ctrl && K.name === 'c' && T().then(() => {
                     if (M) return process.exit();
+                    // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
                     return s();
                 });
             }
 
-            function r(a, K) {
+            function r(a: any, K: any) {
                 return new Promise((S, q) => {
-                    web3.eth.getTransactionCount(userAddress, 'pending').then(async nonce => {
+                    web3.eth.getTransactionCount(userAddress, 'pending').then(async (nonce: any) => {
                         const swapExactForTokens = exchange === 'KOFFEE' ? contract.router.methods.swapExactTokensForKCSSupportingFeeOnTransferTokens : exchange === 'TRADER' ? contract.router.methods.swapExactTokensForAVAXSupportingFeeOnTransferTokens : contract.router.methods.swapExactTokensForETHSupportingFeeOnTransferTokens;
                         i = new BN(await O.methods.balanceOf(userAddress).call());
                         const P = i.mul(new BN(a)).div(new BN('100')).toString();
@@ -584,7 +606,7 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
                             'from': userAddress,
                             'gas': 100000000,
                             'value': 0
-                        }, async (err, estimatedGas) => {
+                        }, async (err: any, estimatedGas: any) => {
                             if (!err) signThenSendPrimaryTxn(chain !== 1 && chain !== 4 ? {
                                 'to': contract.router._address,
                                 'value': web3.utils.toHex('0'),
@@ -598,7 +620,7 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
                                 'value': web3.utils.toHex('0'),
                                 'gasLimit': web3.utils.toHex(Math.round(parseInt(estimatedGas) * 2.5)),
                                 'maxFeePerGas': web3.utils.toHex(K),
-                                'maxPriorityFeePerGas': web3.utils.toHex(formatWei(configs.PRIORITY_GAS, 'gwei')),
+                                'maxPriorityFeePerGas': web3.utils.toHex(formatWei(configs.priority_gas, 'gwei')),
                                 'type': web3.utils.toHex('2'),
                                 'data': swapExactForTokens(P, '0', [contractAddress, native], userAddress, getDeadline()).encodeABI(),
                                 'nonce': nonce,
@@ -623,16 +645,18 @@ export const afterSwapMonitor = (userAddress, privateKey, contractAddress, confi
                     process.stdin.setRawMode(false);
                     process.stdin.removeListener('keypress', L);
                     spinner.clear();
+                    // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
                     return a();
                 });
             }
 
-            if (configs.RUG_PULL_CHECK.toLowerCase() !== 'true' && configs.SELL_MANAGEMENT.toLowerCase() !== 'true' || menuSelection === 341 || menuSelection === 342) return s();
+            // @ts-expect-error ts-migrate(2794) FIXME: Expected 1 arguments, but got 0. Did you forget to... Remove this comment to see the full error message
+            if (configs.rug_pull_check.toLowerCase() !== 'true' && configs.sell_management.toLowerCase() !== 'true' || menuSelection === 341 || menuSelection === 342) return s();
         }
     });
 };
 
-export const predictionBotMethodology = (userAddress, privateKey, configs, menuOption, menuSelection) => {
+export const predictionBotMethodology = (userAddress: any, privateKey: any, configs: any, menuOption: any, menuSelection: any) => {
     return new Promise(async (s, j) => {
         const contractAddress = menuOption === 50 ? contract.predictionPcsBNB._address : menuOption === 90 ? contract.predictionCgBTC._address : menuOption === 91 ? contract.predictionCgBNB._address : menuOption === 92 ? contract.predictionCgETH._address : null;
         const rounds = menuOption === 50 ? contract.predictionPcsBNB.methods.rounds : menuOption === 90 ? contract.predictionCgBTC.methods.Rounds : menuOption === 91 ? contract.predictionCgBNB.methods.Rounds : menuOption === 92 ? contract.predictionCgETH.methods.Rounds : null;
@@ -644,11 +668,11 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
         const claim = menuOption === 50 ? contract.predictionPcsBNB.methods.claim : menuOption === 90 ? contract.predictionCgBTC.methods.user_Claim : menuOption === 91 ? contract.predictionCgBNB.methods.user_Claim : menuOption === 92 ? contract.predictionCgETH.methods.user_Claim : null;
         if (rounds === null || betBear === null || betBull === null || claimable === null || refundable === null || ledger === null || claim === null) return j('Prediction EOFError');
         const spinner = ora({ text: ('Pending Round'), spinner: "aesthetic" }).start();
-        let C;
-        let H;
-        let g;
-        let b;
-        let R;
+        let C: any;
+        let H: any;
+        let g: any;
+        let b: any;
+        let R: any;
 
         async function y() {
             H = menuOption === 50 ? await contract.predictionPcsBNB.methods.currentEpoch().call() : menuOption === 90 ? await contract.predictionCgBTC.methods.currentEpoch().call() : menuOption === 91 ? await contract.predictionCgBNB.methods.currentEpoch().call() : menuOption === 92 ? await contract.predictionCgETH.methods.currentEpoch().call() : 0;
@@ -661,12 +685,13 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
             'lastAmt': null
         };
 
-        function c(T, d, a = false) {
+        function c(T: any, d: any, a = false) {
             (!i.lastBet && !i.lastAmt || a) && (i.lastBet = T, i.lastAmt = d);
         }
 
         return await M();
 
+        // @ts-expect-error ts-migrate(7023) FIXME: 'M' implicitly has return type 'any' because it do... Remove this comment to see the full error message
         async function M() {
             if (menuOption === 50 ? await contract.predictionPcsBNB.methods.paused().call() : menuOption === 90 ? await contract.predictionCgBTC.methods.paused().call() : menuOption === 91 ? await contract.predictionCgBNB.methods.paused().call() : menuOption === 92 ? await contract.predictionCgETH.methods.paused().call() : true) {
                 spinner.stop();
@@ -688,10 +713,12 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                     clearInterval(R);
                     let K = true;
                     let S = false;
-                    let q;
-                    if (configs.AMT_MODE.toLowerCase() === 'usd') q = await getAmountsOut(formatWei(configs.AMOUNT), usd, native);
+                    let q: any;
+                    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+                    if (configs.amt_mode.toLowerCase() === 'usd') q = await getAmountsOut(formatWei(configs.amount), usd, native);
                     else {
-                        if (configs.AMT_MODE.toLowerCase() === 'eth') q = new BN(formatWei(configs.AMOUNT));
+                        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+                        if (configs.amt_mode.toLowerCase() === 'eth') q = new BN(formatWei(configs.amount));
                         else {
                             fileLogger.error('CORE: predictionBotMethodology(): Native Error');
                             throw 'Native Error';
@@ -701,7 +728,7 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                         'to': contractAddress,
                         'value': web3.utils.toHex(q),
                         'gasLimit': undefined,
-                        'gasPrice': web3.utils.toHex(configs.GAS_PRICE === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.GAS_PRICE, 'gwei')),
+                        'gasPrice': web3.utils.toHex(configs.gas_price === '0' ? (await getPrimaryGas()).mul(new BN('2')) : formatWei(configs.gas_price, 'gwei')),
                         'data': undefined,
                         'nonce': undefined
                     };
@@ -711,7 +738,7 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                     const V = P.gt(new BN('0')) && f.gt(new BN('0')) && P.gt(f) && P.div(f).lt(new BN('5')) || P.lt(f) && f.div(P).gt(new BN('5'));
                     let o = 0;
                     let Z = 0;
-                    const n = [];
+                    const n: any = [];
 
                     for (let I = 1; I <= 2; I++) {
                         Y = await rounds(+H - I).call();
@@ -744,10 +771,12 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                                 console.log(chalk.red('Refunded') + ' Previous Round ' + (+H - 1));
                             } else {
                                 if (menuSelection === 593) {
+                                    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
                                     const G1 = i.lastAmt.mul(new BN('2'));
                                     txConfig.value = web3.utils.toHex(G1);
                                     i.lastAmt = G1;
                                     spinner.stop();
+                                    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
                                     console.log(chalk.yellow('Martingale Betting') + ' for Round ' + H + ' / Doubling to: ' + numberWithCommas(Number(formatEther(G1)).toFixed(4)) + ' ' + symbol);
                                 }
                             }
@@ -758,9 +787,12 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                         if (k) await L(H, k, txConfig).then(G2 => {
                             spinner.stop();
                             console.log(chalk.yellow('Streak') + ' Betting ' + chalk.bold(o === 2 ? 'BULL' : 'BEAR') + ' for Round ' + H + ' / Past Results: {' + n + ' }');
+                            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                             spinner.succeed('BSC Credit Tx: ' + G2.credit);
+                            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                             spinner.succeed('Betting Tx: ' + G2.prediction);
                             c(o === 2 ? 'BULL' : 'BEAR', q);
+                            // @ts-expect-error ts-migrate(2322) FIXME: Type '"BULL" | "BEAR"' is not assignable to type '... Remove this comment to see the full error message
                             i.lastBet = o === 2 ? 'BULL' : 'BEAR';
                             S = true;
                         }).catch(G2 => {
@@ -770,9 +802,12 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                         else (menuSelection === 592 || menuSelection === 593) && (V ? await L(H, betBear, txConfig).then(G2 => {
                             spinner.stop();
                             console.log('Betting ' + chalk.bold('BEAR') + ' for Round ' + H);
+                            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                             spinner.succeed('BSC Credit Tx: ' + G2.credit);
+                            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                             spinner.succeed('Betting Tx: ' + G2.prediction);
                             c('BEAR', q);
+                            // @ts-expect-error ts-migrate(2322) FIXME: Type '"BEAR"' is not assignable to type 'null'.
                             i.lastBet = 'BEAR';
                             S = true;
                         }).catch(G2 => {
@@ -781,9 +816,12 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                         }) : await L(H, betBull, txConfig).then(G2 => {
                             spinner.stop();
                             console.log('Betting ' + chalk.bold('BULL') + ' for Round ' + H);
+                            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                             spinner.succeed('BSC Credit Tx: ' + G2.credit);
+                            // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
                             spinner.succeed('Betting Tx: ' + G2.prediction);
                             c('BULL', q);
+                            // @ts-expect-error ts-migrate(2322) FIXME: Type '"BULL"' is not assignable to type 'null'.
                             i.lastBet = 'BULL';
                             S = true;
                         }).catch(G2 => {
@@ -792,7 +830,7 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                         }));
                     }
 
-                    const h = [];
+                    const h: any = [];
 
                     for (let G2 = 1; G2 <= 10; G2++) {
                         const G3 = +H - G2;
@@ -805,12 +843,12 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                         if (G7 > 0 && (G4 || G5) && !G6) h.push(G3);
                     }
 
-                    h.length ? web3.eth.getTransactionCount(userAddress, 'pending').then(G8 => {
+                    h.length ? web3.eth.getTransactionCount(userAddress, 'pending').then((G8: any) => {
                         claim(h).estimateGas({
                             'from': userAddress,
                             'gas': 100000000,
                             'value': 0
-                        }, (G9, GG) => {
+                        }, (G9: any, GG: any) => {
                             !G9 ? (txConfig.value = web3.utils.toHex('0'), txConfig.gasLimit = web3.utils.toHex(Math.round(parseInt(GG) * 2.5)), txConfig.data = claim(h).encodeABI(), txConfig.nonce = G8, signThenSendPrimaryTxn(txConfig, privateKey).then(GD => {
                                 spinner.succeed('Claim Tx: ' + GD + '\n');
                             }).catch(GD => {
@@ -833,20 +871,23 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                 return new BN(T);
             }
 
+            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
             if (menuOption === 90) return formatWei(await fetchBinancePrice('BTCUSDT')).div(new BN('10').pow(new BN('10')));
+            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
             if (menuOption === 91) return formatWei(await fetchBinancePrice('BNBUSDT')).div(new BN('10').pow(new BN('10')));
+            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
             if (menuOption === 92) return formatWei(await fetchBinancePrice('ETHUSDT')).div(new BN('10').pow(new BN('10')));
             return new BN('0');
         }
 
-        function L(T, d, txData) {
+        function L(T: any, d: any, txData: any) {
             return new Promise((K, S) => {
-                web3.eth.getTransactionCount(userAddress, 'pending').then(nonce => {
+                web3.eth.getTransactionCount(userAddress, 'pending').then((nonce: any) => {
                     d(T).estimateGas({
                         'from': userAddress,
                         'gas': 100000000,
                         'value': txData.value
-                    }, (err, estimatedGas) => {
+                    }, (err: any, estimatedGas: any) => {
                         if (!err) {
                             txData.gasLimit = web3.utils.toHex(Math.round(parseInt(estimatedGas) * 2.5));
                             txData.data = d(T).encodeABI();
@@ -857,6 +898,7 @@ export const predictionBotMethodology = (userAddress, privateKey, configs, menuO
                             txData.nonce = nonce;
 
                             signThenSendPrimaryTxn(txData, privateKey).then(V => {
+                                // @ts-expect-error ts-migrate(2322) FIXME: Type 'unknown' is not assignable to type 'string'.
                                 f.prediction = V;
                                 return K(f);
                             }).catch(V => {
