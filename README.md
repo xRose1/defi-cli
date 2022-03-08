@@ -8,7 +8,11 @@ An open-source AIO defi toolkit.
 
 **defi-cli** is free to download. 
 
-Donations: Reach out to @jayohf on Telegram.
+Donations: Reach out to https://t.me/jayohf on Telegram.
+
+I created a group as well if anyone wants to join and discuss bugs/new features, etc.
+https://t.me/+hJ4bQRAANbNlNmI5
+
 
 <!-- toc -->
 * [Installation](#installation)
@@ -53,7 +57,7 @@ Download the latest Windows release.
 
 https://github.com/jayohf/defi-cli/releases/latest/download/defi-cli-win-x64
 
-After downloading, defi-cli should work without additional steps.
+After downloading, you can optionally rename it from "defi-cli-win-64" to defi-cli. It will work either way.
 
 # Quickstart
 

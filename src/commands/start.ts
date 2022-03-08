@@ -1,5 +1,5 @@
 import {Command} from '@oclif/core'
-import start from '../app.js'
+import start from '../app'
 
 export default class Start extends Command {
   static description = 'run bot'
