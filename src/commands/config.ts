@@ -1,17 +1,17 @@
-import { Command, flags } from '@oclif/command'
-import * as os from 'os';
-import { config } from '../config/index.js'
+import {Command, flags} from '@oclif/command'
+import * as os from 'os'
+import {config} from '../config/index'
 
 export default class Config extends Command {
   static description = 'manage configuration'
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    delete: flags.boolean({ char: 'd', description: 'delete?' })
+    help: flags.help({char: 'h'}),
+    delete: flags.boolean({char: 'd', description: 'delete?'})
   }
 
   static args = [
-    { 
+    {
       name: 'key',
       options: [
         'amt_mode',
@@ -30,11 +30,11 @@ export default class Config extends Command {
         'telegram.api_hash',
       ],
     },
-    { name: 'value', description: 'value' }
+    {name: 'value', description: 'value'}
   ]
 
   async run() {
-    const { args, flags } = this.parse(Config)
+    const {args, flags} = this.parse(Config)
 
     const key = args.key
     let value = args.value

@@ -1,17 +1,17 @@
-import { Command, flags } from '@oclif/command'
-import * as os from 'os';
-import { nodeConfig } from '../config/index.js'
+import {Command, flags} from '@oclif/command'
+import * as os from 'os'
+import {nodeConfig} from '../config/index'
 
 export default class NodeConfig extends Command {
   static description = 'manage EVM node configuration'
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    delete: flags.boolean({ char: 'd', description: 'delete?' })
+    help: flags.help({char: 'h'}),
+    delete: flags.boolean({char: 'd', description: 'delete?'}),
   }
 
   static args = [
-    { 
+    {
       name: 'key',
       options: [
         'eth.websockets',
@@ -30,11 +30,11 @@ export default class NodeConfig extends Command {
         'avax.rpc',
       ],
     },
-    { name: 'value', description: 'value' }
+    {name: 'value', description: 'value'},
   ]
 
   async run() {
-    const { args, flags } = this.parse(NodeConfig)
+    const {args, flags} = this.parse(NodeConfig)
 
     const key = args.key
     let value = args.value

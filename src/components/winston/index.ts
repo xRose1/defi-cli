@@ -1,25 +1,25 @@
-import winston, { createLogger, transports, format } from 'winston';
-import 'winston-daily-rotate-file';
+import winston, {createLogger, transports, format} from 'winston'
+import 'winston-daily-rotate-file'
 import {
-    getCoreLocation
-} from '../../utilities/index.js';
+  getCoreLocation,
+} from '../../utilities/index'
 
-const consoleTransport = new transports.Console({});
+const consoleTransport = new transports.Console({})
 
 const dailyRotateFileTransport = new transports.DailyRotateFile({
-    dirname: getCoreLocation('logs'),
-    filename: '%DATE%_combined.log',
-    zippedArchive: true,
-    maxSize: '16m',
-    maxFiles: '7d'
-});
+  dirname: getCoreLocation('logs'),
+  filename: '%DATE%_combined.log',
+  zippedArchive: true,
+  maxSize: '16m',
+  maxFiles: '7d',
+})
 
 export const fileLogger = createLogger({
-    format: format.combine(
-        format.timestamp({ 'format': 'YYYY-MM-DD HH:mm:ss' }),
-        format.printf(Q => '[' + Q['timestamp'] + '] ' + Q['level']['toUpperCase']() + ': ' + Q['message'] + '\n')),
-    transports: [dailyRotateFileTransport, consoleTransport],
-});
+  format: format.combine(
+    format.timestamp({format: 'YYYY-MM-DD HH:mm:ss'}),
+    format.printf(Q => '[' + Q.timestamp + '] ' + Q.level.toUpperCase() + ': ' + Q.message + '\n')),
+  transports: [dailyRotateFileTransport, consoleTransport],
+})
 
 // export const fileLogger = winston['createLogger']({
 //     'transports': [new winston['transports']['DailyRotateFile']({
@@ -36,5 +36,6 @@ export const fileLogger = createLogger({
 
 
 export const somethingWentWrong = () => {
-    return console['log']('Something went wrong...'), process['exit']();
-};
+  return console.log('Something went wrong...')
+  process.exit()
+}
