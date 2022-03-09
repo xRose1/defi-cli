@@ -1,6 +1,6 @@
 {
   "name": "defi-cli",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "defi-cli toolkit",
   "author": "jayohf",
   "bin": {
@@ -76,6 +76,7 @@
     "bin": "defi-cli",
     "dirname": "defi-cli",
     "commands": "./dist/commands",
+    "default": "start",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-autocomplete"
